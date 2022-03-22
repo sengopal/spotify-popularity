@@ -133,3 +133,5 @@ data/
 
 .DS_Store
 .idea/
+
+logs/

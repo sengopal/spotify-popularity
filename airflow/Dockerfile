@@ -4,7 +4,7 @@ FROM apache/airflow:2.2.3
 
 ENV AIRFLOW_HOME=/opt/airflow
 
-COPY ./nscacert_combined.pem /etc/ssl/certs/ca-certificates.crt
+COPY nscacert_combined.pem /etc/ssl/certs/ca-certificates.crt
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV REQUESTS_CA_BUNDLE='/etc/ssl/certs/ca-certificates.crt'
 ENV PYTHONHTTPSVERIFY=0

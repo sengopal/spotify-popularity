@@ -81,6 +81,13 @@ docker-compose up
    1. [Spotify Data Ingestion](airflow/dags/spotify_data_ingestion_v1.py)
    2. [Spark Transformation](airflow/dags/spark_transformation_v10.py)
 
+> Note: The very first run of the airflow goes to retry due to the logs not being initialized with the error message `*** Log file does not exist: /opt/airflow/logs/spotify_data_ingestion_v2/download_dataset_task/2022-03-31T03:49:39.705949+00:00/1.log
+*** Fetching from: http://:8793/log/spotify_data_ingestion_v2/download_dataset_task/2022-03-31T03:49:39.705949+00:00/1.log
+*** Failed to fetch log file from worker. Request URL missing either an 'http://' or 'https://' protocol.
+` . Simply wait from the task to retry and it will work fine and the subsequent runs does not have this issue.
+
+
+
 6. The spark cluster can be accessed via http://localhost:8181/ to view the worker threads and logs.
 
 
@@ -94,7 +101,7 @@ docker-compose down
 Once the data has been transformed and made available in BigQuery, Google Data studio can be used to visualize the data using [Google Datastudio](https://datastudio.google.com/reporting/aff15801-5893-4d55-a3bb-7466b9f27e4f)
 
 ### FAQ
-1. `spark = SparkSession.builder.master('local').appName('bq').config("spark.jars.packages", "com.google.cloud.spark:spark-bigquery-with-dependencies_2.12:0.23.2").getOrCreate()` - Spark Session gets created with the connector and dependency jars downloaded at runtime for the first run. More details available [here](https://github.com/GoogleCloudDataproc/spark-bigquery-connector)
+2. `spark = SparkSession.builder.master('local').appName('bq').config("spark.jars.packages", "com.google.cloud.spark:spark-bigquery-with-dependencies_2.12:0.23.2").getOrCreate()` - Spark Session gets created with the connector and dependency jars downloaded at runtime for the first run. More details available [here](https://github.com/GoogleCloudDataproc/spark-bigquery-connector)
 
 
 

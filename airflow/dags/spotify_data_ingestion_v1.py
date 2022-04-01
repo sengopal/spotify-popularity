@@ -28,18 +28,18 @@ FILE_NAMES = [ARTISTS_FILE_NAME, TRACK_FILE_NAME]
 CLUSTER_COL = 'popularity'
 
 
-def download_data(url, src_file):
-    print(f"Performing {url} > {src_file} - started")
-
-    r = requests.get(url)
-
-    if r.status_code == 200:
-        with open(src_file, 'wb') as f:
-            f.write(r.content)
-    else:
-        raise ValueError(f'file_not_found: {url}')
-
-    print(f"Performing {url} > {src_file} - completed")
+# def download_data(url, src_file):
+#     print(f"Performing {url} > {src_file} - started")
+#
+#     r = requests.get(url)
+#
+#     if r.status_code == 200:
+#         with open(src_file, 'wb') as f:
+#             f.write(r.content)
+#     else:
+#         raise ValueError(f'file_not_found: {url}')
+#
+#     print(f"Performing {url} > {src_file} - completed")
 
 
 def unzip_archive(src_file):
@@ -100,14 +100,20 @@ with DAG(
     #     filename=f"{ZIP_FILE_NAME}"
     # )
 
-    download_dataset_task = PythonOperator(
+
+    download_dataset_task = BashOperator(
         task_id="download_dataset_task",
-        python_callable=download_data,
-        op_kwargs={
-            "url": f"{DOWNLOAD_URL}",
-            "src_file": f"{ZIP_FILE_NAME}"
-        }
+        bash_command=f"wget {DOWNLOAD_URL} -O {ZIP_FILE_NAME}"
     )
+
+    # download_dataset_task = PythonOperator(
+    #     task_id="download_dataset_task",
+    #     python_callable=download_data,
+    #     op_kwargs={
+    #         "url": f"{DOWNLOAD_URL}",
+    #         "src_file": f"{ZIP_FILE_NAME}"
+    #     }
+    # )
 
     unzip_archive_task = PythonOperator(
         task_id="unzip_archive_task",
@@ -115,11 +121,6 @@ with DAG(
         op_kwargs={
             "src_file": f"{ZIP_FILE_NAME}"
         }
-    )
-
-    cleanup_local_task = BashOperator(
-        task_id="cleanup_local_task",
-        bash_command=f"cd ${AIRFLOW_HOME}; rm {ARTISTS_FILE_NAME}.csv;rm {TRACK_FILE_NAME}.csv; rm *.parquet; rm {ZIP_FILE_NAME}; "
     )
 
     parquet_tasks = []
@@ -170,6 +171,7 @@ with DAG(
         bigquery_tasks.append(bigquery_external_table_task)
 
     table_tasks = []
+
     for file_name in FILE_NAMES:
         CREATE_BQ_TBL_QUERY = (f"CREATE OR REPLACE TABLE {BIGQUERY_DATASET}.{file_name}_data \
             CLUSTER BY {CLUSTER_COL} \
@@ -189,7 +191,16 @@ with DAG(
 
         table_tasks.append(bq_create_clustered_table_job)
 
-    download_archive_task >> unzip_archive_task >> parquet_tasks
+    cleanup_local_tasks = []
+    for file_name in FILE_NAMES:
+        cleanup_local_task = BashOperator(
+            task_id=f"{file_name}_cleanup_local_task",
+            bash_command=f"cd ${AIRFLOW_HOME}; rm -f {file_name}.csv; rm -f {file_name}.parquet; rm -f {ZIP_FILE_NAME};"
+        )
 
-    parquet_tasks[0] >> local_to_gcs_tasks[0] >> bigquery_tasks[0] >> table_tasks[0] >> cleanup_local_task
-    parquet_tasks[1] >> local_to_gcs_tasks[1] >> bigquery_tasks[1] >> table_tasks[0] >> cleanup_local_task
+        cleanup_local_tasks.append(cleanup_local_task)
+
+    download_dataset_task >> unzip_archive_task >> parquet_tasks
+
+    parquet_tasks[0] >> local_to_gcs_tasks[0] >> bigquery_tasks[0] >> table_tasks[0] >> cleanup_local_tasks[0]
+    parquet_tasks[1] >> local_to_gcs_tasks[1] >> bigquery_tasks[1] >> table_tasks[1] >> cleanup_local_tasks[1]

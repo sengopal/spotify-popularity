@@ -1,2 +1,10 @@
 apache-airflow-providers-google
+apache-airflow-providers-apache-spark
 pyarrow
+pyspark
+pytest
+boto3
+requests
+pycryptodome
+pytz
+moto

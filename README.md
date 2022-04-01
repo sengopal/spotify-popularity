@@ -1,27 +1,13 @@
-# spotify-popularity
-spotify-popularity - A Data Engineering project to demonstrate pipelines for Data Engineering Zoomcamp.
+# Spotify Popularity
+Spotify Popularity - A Data Engineering project to demonstrate pipelines for data engineering zoomcamp. The
 
-### Steps
-1. Build the image (only first-time, or when there's any change in the `Dockerfile`):
-Takes ~15 mins for the first-time
-```shell
-docker-compose build
+## Index
+1. Project Description and Design Implementation - [Project](PROJECT.md)
+2. Step-by-step instructions for installation and execution - [Install](INSTALL.md)
 
-2. Initialize the Airflow scheduler, DB, and other config
-```shell
-docker-compose up airflow-init
-```
+## Dataset
+[Spotify Dataset](https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-600k-tracks?select=tracks.csv)
 
-3. Kick up the all the services from the container:
-```shell
-docker-compose up
-```
-
-4. Login to Airflow web UI on `localhost:8080` with default creds: `airflow/airflow`
-
-5. Run your DAG on the Web Console.
-
-6. On finishing your run or to shut down the container/s:
-```shell
-docker-compose down
-```
+## References
+1. [Rubric](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/week_7_project)
+2. [Spark-Airflow](https://github.com/cordon-thiago/airflow-spark)

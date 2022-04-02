@@ -1,9 +1,9 @@
 # Spotify Popularity
-Spotify Popularity - A Data Engineering project to demonstrate pipelines for data engineering zoomcamp. The
+Spotify Popularity - A Data Engineering project to demonstrate pipelines for data engineering zoomcamp.
 
 ## Index
-1. Project Description and Design Implementation - [Project](PROJECT.md)
-2. Step-by-step instructions for installation and execution - [Install](INSTALL.md)
+1. [Project](PROJECT.md) - Project Description and Design Implementation
+2. [Install](INSTALL.md) - Step-by-step instructions for installation and execution
 
 ## Dataset
 [Spotify Dataset](https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-600k-tracks?select=tracks.csv)
